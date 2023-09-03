@@ -13,8 +13,9 @@ class NetworkGifRepository(
     override suspend fun getTrendingGifs(apiKey: String, limit: Int): List<Gif> =
         gifService.getTrendingGifs(apiKey, limit).data.map { data ->
             Gif(
+                id = data.id,
                 title = data.title,
-                previewLink = data.images?.original?.webp,
+                previewLink = data.images?.downsizedMedium?.url,
                 imageLink = data.images?.original?.url
             )
         }

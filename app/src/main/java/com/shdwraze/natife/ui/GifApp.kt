@@ -16,10 +16,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.shdwraze.natife.ui.screen.GifFullScreen
 import com.shdwraze.natife.ui.screen.HomeScreen
 
+enum class GifScreen {
+    List,
+    Gif
+}
+
 @Composable
-fun GifApp() {
+fun GifApp(
+    navController: NavHostController = rememberNavController()
+) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     Scaffold(
@@ -28,16 +42,51 @@ fun GifApp() {
             GifTopAppBar(scrollBehavior = scrollBehavior)
         }
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
+//        Surface(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(it)
+//        ) {
+//            val gifViewModel: GifViewModel = viewModel(factory = GifViewModel.Factory)
+//            HomeScreen(
+//                gifUiState = gifViewModel.gifUiState,
+//                retryAction = gifViewModel::getTrendingGifs
+//            )
+//        }
+        val gifViewModel: GifViewModel = viewModel(factory = GifViewModel.Factory)
+
+        NavHost(
+            navController = navController,
+            startDestination = GifScreen.List.name,
+            modifier = Modifier.padding(it)
         ) {
-            val gifViewModel: GifViewModel = viewModel(factory = GifViewModel.Factory)
-            HomeScreen(
-                gifUiState = gifViewModel.gifUiState,
-                retryAction = gifViewModel::getTrendingGifs
-            )
+            composable(route = GifScreen.List.name) {
+                HomeScreen(
+                    gifUiState = gifViewModel.gifUiState,
+                    retryAction = gifViewModel::getTrendingGifs,
+                    navController = navController
+                )
+            }
+            composable(
+                route = "${GifScreen.Gif.name}/{gifId}",
+                arguments = listOf(navArgument("gifId") {
+                    type = NavType.StringType
+                })
+            ) { navBackStackEntry ->
+                val gifId = navBackStackEntry.arguments?.getString("gifId")
+                gifId?.let {
+                    val gifUiState = gifViewModel.gifUiState
+
+                    if (gifUiState is GifUiState.Success) {
+                        val gifs = gifUiState.gifs
+
+                        GifFullScreen(
+                            gifId = gifId,
+                            gifs = gifs
+                        )
+                    }
+                }
+            }
         }
     }
 }
