@@ -15,6 +15,9 @@ import com.shdwraze.natife.BuildConfig
 import com.shdwraze.natife.GifApplication
 import com.shdwraze.natife.data.Gif
 import com.shdwraze.natife.data.GifRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -40,12 +43,28 @@ class GifViewModel(
         mutableStateOf(value = "")
     val searchTextState: State<String> = _searchTextState
 
+    private val _isRefreshing: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> get() = _isRefreshing.asStateFlow()
+
     fun updateSearchWidgetState(newValue: SearchWidgetState) {
         _searchWidgetState.value = newValue
     }
 
     fun updateSearchTextState(newValue: String) {
         _searchTextState.value = newValue
+    }
+
+    fun refresh() {
+        viewModelScope.launch {
+            try {
+                _isRefreshing.emit(true)
+                getTrendingGifs()
+            } catch (e: Exception) {
+                GifUiState.Error
+            } finally {
+                _isRefreshing.emit(false)
+            }
+        }
     }
 
     init {

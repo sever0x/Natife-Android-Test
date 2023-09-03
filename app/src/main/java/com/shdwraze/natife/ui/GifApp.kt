@@ -82,7 +82,8 @@ fun GifApp(
                 HomeScreen(
                     gifUiState = gifViewModel.gifUiState,
                     retryAction = gifViewModel::getTrendingGifs,
-                    navController = navController
+                    navController = navController,
+                    gifViewModel = gifViewModel
                 )
             }
             composable(
