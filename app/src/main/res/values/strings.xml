@@ -1,7 +1,11 @@
 <resources>
     <string name="app_name">Natife-Android-Test</string>
+    <string name="alt_name">Giphy</string>
     <string name="loading_failed">Failed to load</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading</string>
     <string name="gif">Gif Image</string>
+    <string name="search_icon">Search Icon</string>
+    <string name="search_text">Let\'s search!</string>
+    <string name="close_icon">Close Icon</string>
 </resources>
