@@ -14,7 +14,7 @@ class NetworkGifRepository(
         gifService.getTrendingGifs(apiKey, limit).data.map { data ->
             Gif(
                 title = data.title,
-                previewLink = data.images?.previewGif?.url,
+                previewLink = data.images?.original?.webp,
                 imageLink = data.images?.original?.url
             )
         }
